@@ -8,13 +8,14 @@
     <version>1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <!--eureka注册中心-->
-  <artifactId>eureka-service</artifactId>
+  <!--gateway 网关中心-->
+  <artifactId>gateway-service</artifactId>
 
   <dependencies>
+    <!--eureka客户端-->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-netflix-eureka-server</artifactId>
+      <artifactId>spring-cloud-netflix-eureka-client</artifactId>
     </dependency>
   </dependencies>
 

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: oauth-service
+server:
+  port: 9999
+  undertow:
+    threads:
+      io: 16
+      worker: 256
+    direct-buffers: true
+    buffer-size: 1024
