@@ -2,7 +2,7 @@ spring:
   application:
     name: oauth-service
 server:
-  port: 9999
+  port: 8889
   undertow:
     threads:
       io: 16
