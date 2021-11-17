@@ -19,7 +19,7 @@ public class DateUtils {
   /**
    * 获取当前时间
    *
-   * @param pattern
+   * @param pattern 时间格式正则
    * @return
    */
   public static String getCurrentDateTime(String pattern) {
@@ -30,8 +30,8 @@ public class DateUtils {
   /**
    * 获取开始时间和结束时间
    *
-   * @param date
-   * @param suffix
+   * @param date   时间对象
+   * @param suffix 格式后缀
    * @return
    */
   public static String getDateTime(Object date, String suffix) {
@@ -57,7 +57,7 @@ public class DateUtils {
   /**
    * 获取当前时间前几天或后几天时间
    *
-   * @param days
+   * @param days  相隔天数
    * @return
    */
   public static String getCurrentDateTimeMinusDays(int days) {
@@ -69,7 +69,7 @@ public class DateUtils {
   /**
    * 获取当前时间后几天时间
    *
-   * @param days
+   * @param days  相隔天数
    * @return
    */
   public static String getCurrentDateTimePlusDays(int days) {
@@ -81,7 +81,7 @@ public class DateUtils {
   /**
    * 获取当前时间前几月时间
    *
-   * @param months
+   * @param months 相隔月份
    * @return
    */
   public static String getCurrentDateTimeMinusMonths(int months) {
@@ -93,7 +93,7 @@ public class DateUtils {
   /**
    * 获取当前时间后几月时间
    *
-   * @param months
+   * @param months  相隔月份
    * @return
    */
   public static String getCurrentDateTimePlusMonths(int months) {
@@ -105,7 +105,8 @@ public class DateUtils {
   /**
    * 获取当前前几天
    *
-   * @param days
+   * @param days 相隔天数
+   * @param suffix  格式后缀
    * @return
    */
   public static String getCurrentDateMinusDays(int days, String suffix) {
@@ -117,7 +118,8 @@ public class DateUtils {
   /**
    * 获取当前后几天
    *
-   * @param days
+   * @param days  相隔天数
+   * @param suffix  格式后缀
    * @return
    */
   public static String getCurrentDateTimePlusDays(int days, String suffix) {
