@@ -6,7 +6,7 @@
  </dependency>
 ```
 ### 一、spring-cloud-starter-oauth2 是对spring-cloud-starter-security、spring-security-oauth2、spring-security-jwt这3个依赖的整合。
-#### 1、spring-cloud-starter-security:主要用来认证和授权
+#### 1、spring-cloud-starter-security
 * 核心概念
 ```text
 1、AuthenticationManager：用户认证的管理类,所有的认证请求（比如login）都会通过提交一个token给AuthenticationManager的实现类的authenticate()方法来实现。
@@ -15,7 +15,7 @@
 4、AuthenticationToken：认证token
 5、SecurityContext：用户通过认证之后，就会为这个用户生成一个唯一的SecurityContext，里面包含用户的认证信息Authentication。
 ```
-* ### spring-security-oauth2:主要是用来发放令牌
+* ### spring-security-oauth2
 ```text
 
 ```

@@ -12,3 +12,8 @@ eureka:
     hostname: oauth
     lease-renewal-interval-in-seconds: 5 #每隔几秒告诉eureka服务器我还存活，用于心跳检测
     lease-expiration-duration-in-seconds: 10 #如果心跳检测一直没有发送，10秒后会从eureka服务器中将此服务剔除
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
