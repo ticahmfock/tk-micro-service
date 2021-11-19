@@ -20,9 +20,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
  */
 @EnableAuthorizationServer
 @Configuration
-public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-  private static final Logger log = LoggerFactory.getLogger(AuthorizationServerConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(AuthorizationServerConfig.class);
 
   @Resource
   private RedisClientDetailsService redisClientDetailsService;
