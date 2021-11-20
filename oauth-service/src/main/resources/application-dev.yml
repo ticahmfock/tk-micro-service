@@ -17,3 +17,9 @@ spring:
     host: localhost
     port: 6379
     database: 0
+  datasource:
+    druid:
+      enable: true
+      url: jdbc:mysql://182.61.49.195:3306/micro_service?allowMultiQueries=true&useSSL=false
+      username: root
+      password: 29147605/*-+@tcf
