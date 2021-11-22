@@ -1,5 +1,6 @@
 package com.tk.server;
 
+import com.tk.server.service.RedisAuthorizationCodeService;
 import com.tk.server.service.RedisClientDetailsService;
 import javax.annotation.Resource;
 import org.slf4j.Logger;
@@ -27,16 +28,26 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
   @Resource
   private RedisClientDetailsService redisClientDetailsService;
   @Resource
-  private AuthenticationManager authenticationManager;
+  private RedisAuthorizationCodeService redisAuthorizationCodeService;
 
 
+  /**
+   * 配置令牌端点的安全约束
+   *
+   * @param security
+   * @throws Exception
+   */
   @Override
   public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-    super.configure(security);
+    security
+        // 对 /oauth/token_key放权
+        .tokenKeyAccess("permitAll()")
+        // 对 /oauth/check_token 开启校验
+        .checkTokenAccess("isAuthenticated()");
   }
 
   /**
-   * 配置客户端详情服务。
+   * 配置客户端详情服务,初始化客户端详情信息。
    *
    * @param clients
    * @throws Exception
@@ -50,14 +61,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
   /**
    * 配置   授权(authorization);
-   *       令牌(token)的访问端点;
-   *       令牌服务(token services);
-   *       token的存储方式(tokenStore)；
+   * 令牌(token)的访问端点;
+   * 令牌服务(token services);
+   * token的存储方式(tokenStore)；
+   *
    * @param endpoints
    * @throws Exception
    */
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-    endpoints.authenticationManager(authenticationManager);
+    endpoints.authorizationCodeServices(redisAuthorizationCodeService);
   }
 }
