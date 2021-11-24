@@ -1,9 +1,8 @@
-package com.tk.server.service;
+package com.tk.common.oauth2.service.client;
 
 
 import com.alibaba.fastjson.JSONObject;
 import java.util.List;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +14,6 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
-import org.springframework.stereotype.Component;
 
 /**
  * 采用redis来存储客户端信息
@@ -37,10 +35,11 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
    */
   private RedisTemplate<String, Object> redisTemplate;
 
-  public RedisTemplate<String, Object> getRedisTemplate() {
-    return redisTemplate;
-  }
-
+  /**
+   * 注入redisTemplate
+   *
+   * @param redisTemplate
+   */
   public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
     this.redisTemplate = redisTemplate;
   }
@@ -49,8 +48,16 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
     super(dataSource);
   }
 
+  /**
+   * 通过clientId查询客户端详情
+   *
+   * @param clientId
+   * @return
+   * @throws InvalidClientException
+   */
   @Override
   public ClientDetails loadClientByClientId(String clientId) throws InvalidClientException {
+    log.info("oauth中心===>通过clientId:{}来获取客户端详情", clientId);
     ClientDetails clientDetails = null;
     String value = (String) redisTemplate.boundHashOps(CLIENT_KEY).get(clientId);
     if (StringUtils.isEmpty(value)) {
@@ -69,6 +76,7 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
    */
   @Override
   public void updateClientDetails(ClientDetails clientDetails) throws NoSuchClientException {
+    log.info("oauth中心===>更新客户端详情");
     super.updateClientDetails(clientDetails);
     getClientDetailsAndCache(clientDetails.getClientId());
   }
@@ -82,6 +90,7 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
    */
   @Override
   public void updateClientSecret(String clientId, String secret) throws NoSuchClientException {
+    log.info("oauth中心===>通过clientId:{}更新客户端秘钥:{}", clientId, secret);
     super.updateClientSecret(clientId, secret);
     getClientDetailsAndCache(clientId);
   }
@@ -94,6 +103,7 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
    */
   @Override
   public void removeClientDetails(String clientId) throws NoSuchClientException {
+    log.info("oauth中心===>通过clientId:{}删除客户端详情", clientId);
     super.removeClientDetails(clientId);
     redisTemplate.boundHashOps(CLIENT_KEY).delete(clientId);
   }
@@ -105,11 +115,11 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
    * @return
    */
   private ClientDetails getClientDetailsAndCache(String clientId) {
+    log.info("获取clientId:{}的客户端详情", clientId);
     try {
       ClientDetails clientDetails = super.loadClientByClientId(clientId);
       if (clientDetails != null) {
         redisTemplate.boundHashOps(CLIENT_KEY).put(clientId, JSONObject.toJSONString(clientDetails));
-        log.info("获取clientId:{}的客户端详情", clientId);
       }
       return clientDetails;
     } catch (NoSuchClientException e) {
@@ -122,7 +132,7 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
   /**
    * 将所有客户端详情加入到redis缓存中
    */
-  public void getAllClientDetailsToCache() {
+  public void getAllClientDetailsToRedis() {
     if (!redisTemplate.hasKey(CLIENT_KEY)) {
       List<ClientDetails> list = super.listClientDetails();
       if (CollectionUtils.isEmpty(list)) {

@@ -1,4 +1,4 @@
-package com.tk.server.service.login;
+package com.tk.common.oauth2.service;
 
 import com.tk.model.LoginUser;
 import org.springframework.security.core.userdetails.UserDetails;

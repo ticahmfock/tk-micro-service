@@ -1,4 +1,4 @@
-package com.tk.server;
+package com.tk.common.oauth2.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,11 +12,11 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
  */
 @Configuration
 @EnableResourceServer
-public class ResourceServer extends ResourceServerConfigurerAdapter {
+public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
   @Override
   public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-    resources.resourceId("test");
+    resources.resourceId("api-user").stateless(true);
   }
 
   @Override

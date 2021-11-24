@@ -1,6 +1,5 @@
-package com.tk.server.service;
+package com.tk.common.oauth2.service;
 
-import com.tk.exception.MicroSystemException;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
