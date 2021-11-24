@@ -1,8 +1,7 @@
 ## oauth认证中心 【oauth-service】
 
 ### 一、原理流程
-### ①理解Security
-#### Security组件
+#### ①理解Security组件
 ```text
 1、SecurityContextHolder:用来存储安全上下文信息,Spring Security 校验之后,验证信息存储在SecurityContext
 
@@ -14,10 +13,72 @@
   
   通过遍历找到支持当前Authentication认证的AuthenticationProvider,交给其进行认证
 
-4、
+4、AuthenticationProvider:对Authentication进行校验的组件.常见的有:
+   
+  4.1、DaoAuthenticationProvider:Dao式认证Provider,从数据库中取出信息与提交信息进行对比,完成认证
+  
+  4.2、AnonymousAuthenticationProvider:匿名认证Provider
 
-    
+5、UserDetails:与Authentication进行理解对比.Authentication是来自用户提交的数据封装,UserDetails是从数据库获取的用户信息封装
+
+6、UserDetailsService:DaoAuthenticationProvider认证器从数据库层取数据是通过UserDetailsService 完成的，取到的是UserDetails.常见有:
+  
+  6.1、JdbcDaoImpl:数据库查询
+
+  6.2、ClientDetailsUserDetailsService:查询[clientId,clientSecret ]形式的UserDetails
 ```
+#### ②Security中的Filter
+```text
+1、请求都是经过一系列的filter链到达Servlet的.类似 Filter1-->Filter2-->Filter3-->...-->servlet
+
+2、Spring Security 在Web应用中,是通过filter介入的,为了介入到主体ApplicationFilterChain中,这里介绍一个特殊的Filter【DelegatingFilterProxy】
+
+```
+
+#### DelegatingFilterProxy:授权过滤代理
+```text
+1、本质是一个Filter,内部存在一个Filter delegate属性,用来代理另外一个Filter.当请求执行到DelegatingFilterProxy时,会调用delegate这个filter.
+    
+    DelegatingFilterProxy可以看做一个可以让Filter链拐弯的Filter
+
+Filter-->DelegatingFilterProxy-->Filter-->Servlet
+          ↓          ↑
+         Filter    Filter
+          ↓         ↑
+         Filter-->Filter 
+
+  
+```
+#### FilterChainProxy
+```text
+1、本质是一个Filter,Security就是通过把它设置到DelegatingFilterProxy.delegate属性上来介入了主体FilterChain.是一个代理性质的Filter
+
+2、它内部维护了一个List<SecurityFilterChain> filterChains来表示不同权限的url对应的不同的过滤器链,但是一次请求最多只有一个SpringSecurityFilterChain链
+```
+#### SpringSecurityFilterChain
+```text
+1、FilterChainProxy遍历List<SecurityFilterChain> filterChains匹配到一个适用于当前请求的SecurityFilterChain然后就是链式调用
+```
+#### 常见的Filter
+```text
+1、SecurityContextPersistenceFilter:位于SecurityFilterChain的顶端.以前我们使用session来存储用户信息，用了Security框架后，用户登录一次，后续通过sessionId 来识别，
+
+   用户信息存放到SecurityContextHolder中，这个放入的过程就是SecurityContextPersistenceFilter完成的,
+  
+   SecurityContextPersistenceFilter的主要工作创建 SecurityContext 安全上下文信息和请求结束时清空 SecurityContextHolder
+
+2、UsernamePasswordAuthenticationFilter:表单认证是最常用的一个认证方式，允许表单输入用户名和密码进行登录。
+   
+   它会先将 [username,password]封装成Authentication然后交给authenticationManager 认证,authenticationManager 会选择一个provider 
+  
+   通过UserDetailsService从redis获取mysql等数据层面获得存储用户信息的数据的UserDetail与Authentication 进行对比。认证成功
+
+3、ExceptionTranslationFilter:异常转换过滤器位于整个 springSecurityFilterChain 的后方,主要处理两大异常:
+
+   AccessDeniedException 访问异常和 AuthenticationException 认证异常.根据配置和异常类型，会选择跳转到登录页面，或者404 ，405页面.
+      
+``` 
+
 
 ### 二、代码层面
 
