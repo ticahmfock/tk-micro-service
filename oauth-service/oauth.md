@@ -8,9 +8,14 @@
 
 2、Authentication:是Spring Security中最高级别的身份/认证的抽象。在进入Security前得把信息封装成Authentication
 
-3、AuthenticationManager:是用来校验Authentication。常见的实现类有ProviderManager。但ProviderManager将校验工作交给了另外一个组件AuthenticationProvider来完成。
+3、AuthenticationManager:是用来校验Authentication。常见的实现类有ProviderManager.
 
-ProviderManager中维护一个
+  但ProviderManager将校验工作交给了另外一个组件AuthenticationProvider来完成.ProviderManager中维护一个List<AuthenticationProvider>,
+  
+  通过遍历找到支持当前Authentication认证的AuthenticationProvider,交给其进行认证
+
+4、
+
     
 ```
 
