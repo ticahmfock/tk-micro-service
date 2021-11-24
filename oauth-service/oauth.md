@@ -78,7 +78,81 @@ Filter-->DelegatingFilterProxy-->Filter-->Servlet
    AccessDeniedException 访问异常和 AuthenticationException 认证异常.根据配置和异常类型，会选择跳转到登录页面，或者404 ，405页面.
       
 ``` 
+#### ③@EnableWebSecurity注解
+```code
+Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
+@Target(value = { java.lang.annotation.ElementType.TYPE })
+@Documented
+@Import({ WebSecurityConfiguration.class,
+		SpringWebMvcImportSelector.class })
+@EnableGlobalAuthentication
+@Configuration
+public @interface EnableWebSecurity {
+	boolean debug() default false;
+}
 
+=====================================================
+
+@Import(AuthenticationConfiguration.class)
+@Configuration
+public @interface EnableGlobalAuthentication {
+}
+```
+```text
+1、@EnableWebSecurity注解的工作就是激活三个类:
+
+  1.1、SpringWebMvcImportSelector:判断当前的环境是否包含 springmvc
+
+  1.2、WebSecurityConfiguration:是用来配置 web 安全的
+
+  1.3、AuthenticationConfiguration: 配置认证相关的核心类，主要负责生成全局的身份认证管理者 AuthenticationManager
+```
+#### 阅读Spring相关框架的源码技巧
+```text
+1、xxConfiguration: 这种格式的配置文件，我们可以看做是一个bean.xml文件，对容器输出Bean
+
+2、xxConfigurer: 这种格式的配置文件，通常是要被xxConfiguration获取到。xxConfiguration文件从xxConfigurer中提取配置，统一到xxConfiguration中处理
+
+总结:xxConfiguration会搜集N个相关的xxConfigurer到本类中解析他们，统一成一个xxConfiguration配置文件对容器输出Bean.
+```
+#### WebSecurityConfiguration
+```code
+
+public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAware {
+
+	//搜集SecurityConfigurer到本类中，做集中解析。
+	private List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers
+    
+     //输出springSecurityFilterChain bean
+    @Bean(name = "springSecurityFilterChain";)
+	public Filter springSecurityFilterChain() throws Exception {
+		boolean hasConfigurers = webSecurityConfigurers != null
+				&& !webSecurityConfigurers.isEmpty();
+		if (!hasConfigurers) {
+			WebSecurityConfigurerAdapter adapter = objectObjectPostProcessor
+					.postProcess(new WebSecurityConfigurerAdapter() {
+					});
+			webSecurity.apply(adapter);
+		}
+		return webSecurity.build();//构建FilterChainProxy
+	}
+}
+```
+```text
+1、搜集相关的SecurityConfigurer:我们集成security时，通常会继承WebSecurityConfigurerAdapter做安全配置,
+   
+   WebSecurityConfigurerAdapter本身实现了SecurityConfigurer,这样们的配置信息会被解析到WebSecurityConfiguration配置类中
+   
+   作用到security中。所以这就是为啥我们要实现一个WebSecurityConfigurerAdapter来配置安全策略的原因
+
+2、输出（FilterChainProxy）springSecurityFilterChain bean:这样就算是在代码层面与主题FilterChain对接上了
+
+3、WebSecurityConfigurerAdapter适配器模式的运用，使我们可以选择性的实现部分配置
+```
+#### ④流程图
+```text
+
+```
 
 ### 二、代码层面
 
