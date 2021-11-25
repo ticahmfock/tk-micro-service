@@ -151,8 +151,115 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 ```
 #### ④流程图
 ```text
-
+   
 ```
+#### ⑤security oauth2原理
+```text
+1、Security Oauth2 如何架设在Security框架之上
+
+2、Security Oauth2 又发生了哪些变化呢
+
+3、Oauth2的四种认证方式是如何实现的
+```
+#### Oauth2组件
+```text
+1、TokenEndpoint:理解为一个Controller ，/oauth/token接口就是在这里,是Oauth逻辑处理的地方
+
+2、TokenGranter:令牌授予者,Oauth2规范的实现就是此组件实现的
+   
+   2.1、AuthorizationCodeTokenGranter:授权码模式
+
+   2.2、ClientCredentialsTokenGranter:客户端模式
+   
+   2.3、ImplicitTokenGranter:implicit简化模式
+  
+   2.4、RefreshTokenGranter:刷新token模式
+
+   2.5、ResourceOwnerPasswordTokenGranter:密码模式
+
+3、TokenServices:定义了对Token的一些操作，创建，获取，刷新,我们把他理解为Service层
+
+   3.1、AuthorizationServerTokenServices:授权服务器端用到的tokenServices
+
+   3.2、ResourceServerTokenServices:资源服务器端的tokenServices
+
+4、这三个组件总体关系就是;请求到TokenEndPoint(Controller),交给TokenGranter进行授权;
+   
+   在TokenGranter授权过程中调用TokenServices生成Token
+```
+#### Oauth2相关注解
+```code
+//权限服务器配置
+@Configuration
+@EnableAuthorizationServer
+protected static class MyAuthorizationServerConfiguration extends  AuthorizationServerConfigurerAdapter {
+}
+
+//@EnableAuthorizationServer注解
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import({AuthorizationServerEndpointsConfiguration.class, AuthorizationServerSecurityConfiguration.class})
+public @interface EnableAuthorizationServer {
+
+}
+
+
+//资源服务器配置
+@Configuration
+@EnableResourceServer
+protected static class MyResourceServerConfiguration extends
+    ResourceServerConfigurerAdapter {
+    
+}
+
+//@EnableResourceServer注解
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Import(ResourceServerConfiguration.class)
+public @interface EnableResourceServer {
+
+}
+```
+#### @EnableAuthorizationServer注解
+```text
+1、此注解主要是激活两个配置类:
+ 
+    1.1、AuthorizationServerEndpointsConfiguration:配置TokenEndpoint 等Controller类，也就是注册Controller式Bean，例如/oauth/token接口
+ 
+    1.2、AuthorizationServerSecurityConfiguration:间接实现了SecurityConfigurer接口.
+ 
+        SecurityConfigurer接口在上面说过,会在启用Security时,被WebSecurityConfiguration配置类搜集解析.这样Oauth2的配置与Security配置体系关联起来了
+
+    1.3、自定义类AuthorizationServerConfig:继承AuthorizationServerConfigurerAdapter,间接继承了AuthorizationServerConfigurer.
+        
+        而AuthorizationServerConfigurer会被AuthorizationServerSecurityConfiguration搜集解析的;
+
+        而AuthorizationServerSecurityConfiguration会被WebSecurityConfiguration配置类搜集;
+
+        这样我们自定义的配置就这样跟Security配置体系关联起来了
+```
+```code
+public class AuthorizationServerSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+	@Autowired
+	private List<AuthorizationServerConfigurer> configurers = Collections.emptyList();
+} 
+```
+#### @EnableResourceServer注解
+```text
+1、主要是激活ResourceServerConfiguration类
+
+2、ResourceServerConfiguration类:也间接的实现了SecurityConfigurer接口;也就是说它也会被WebSecurityConfiguration配置类搜集解析
+
+3、自定义类ResourceServerConfig:实现了ResourceServerConfigurer 接口,他会被ResourceServerConfiguration配置类搜集解析,
+ 
+   最终也是会进入WebSecurityConfiguration配置类
+```
+#### Oauth2通过多出两个配置类,间接配置了security,最终都会在Security框架体系内生效,也就是说Oauth2框架就是架设在Security框架上的
+
+####
 
 ### 二、代码层面
 
