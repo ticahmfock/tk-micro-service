@@ -149,10 +149,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 
 3、WebSecurityConfigurerAdapter适配器模式的运用，使我们可以选择性的实现部分配置
 ```
-#### ④流程图
-```text
-   
-```
+
 #### ⑤security oauth2原理
 ```text
 1、Security Oauth2 如何架设在Security框架之上
@@ -257,20 +254,25 @@ public class AuthorizationServerSecurityConfiguration extends WebSecurityConfigu
  
    最终也是会进入WebSecurityConfiguration配置类
 ```
-#### Oauth2通过多出两个配置类,间接配置了security,最终都会在Security框架体系内生效,也就是说Oauth2框架就是架设在Security框架上的
+* #### Oauth2通过多出两个配置类,间接配置了security,最终都会在Security框架体系内生效,也就是说Oauth2框架就是架设在Security框架上的
+* #### Spring security 在web应用中是基于Filter的
+* #### Spring security Oauth2 基于 Security 框架添加认证模式的逻辑       
 
-####
+#### Security Oauth2流程图
+* #### Token获取流程图
+![流程图](./流程图.png "流程图")
 
 ### 二、代码层面
-
-
+#### ①导入spring-cloud-starter-oauth2依赖
+```text
+1、spring-cloud-starter-oauth2:是对spring-cloud-starter-security、spring-security-oauth2、spring-security-jwt这3个依赖的整合。
+```
 ```
  <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-oauth2</artifactId>
  </dependency>
 ```
-### 一、spring-cloud-starter-oauth2 是对spring-cloud-starter-security、spring-security-oauth2、spring-security-jwt这3个依赖的整合。
 #### 1、spring-cloud-starter-security
 * 核心概念
 ```text
@@ -426,8 +428,4 @@ Spring Security在用户登录时自动绑定认证信息到当前线程，在�
 DaoAuthenticationProvider：它获取用户提交的用户名和密码，比对其正确性，如果正确，返回一个数据库中的用户信息（假设用户信息被保存在数据库中）
 ```
 
-### 原理
-```text
-通过拦截器获取拦截，将请求参数进行包装，之后通过认证管理器来分配对应的认证提供者进行认证，
-通过自定义的用户详情获取用户的信息，进行认证
-```
+

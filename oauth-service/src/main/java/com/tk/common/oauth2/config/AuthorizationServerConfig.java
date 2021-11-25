@@ -83,8 +83,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
    * 1、认证管理器(AuthenticationManager);
    * 2、授权服务器(AuthorizationServerTokenServices);
    * 3、token存储方式(tokenStore)
-   * 令牌(token)的访问端点;
-   * 令牌服务(token services);
    *
    * @param endpoints
    * @throws Exception
@@ -94,7 +92,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     endpoints
         //认证管理器
         .authenticationManager(authenticationManager)
+        //配置授权服务器端的token服务
         .tokenServices(defaultTokenServices())
+        //配置token存储方式
         .tokenStore(redisTokenStore);
   }
 
