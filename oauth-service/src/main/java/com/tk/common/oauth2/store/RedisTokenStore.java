@@ -1,6 +1,7 @@
 package com.tk.common.oauth2.store;
 
 import java.util.Collection;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -10,7 +11,7 @@ import org.springframework.security.oauth2.provider.token.DefaultAuthenticationK
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
- * 自定义store存储方式 同时使用本地缓存来环境对redis访问的压力
+ * 自定义store存储方式
  *
  * @author: TK
  * @date: 2021/11/24 9:21
@@ -74,8 +75,22 @@ public class RedisTokenStore implements TokenStore {
     return null;
   }
 
+  /**
+   * 删除token
+   *
+   * @param token
+   */
   @Override
   public void removeAccessToken(OAuth2AccessToken token) {
+    removeAccessToken(token.getValue());
+  }
+
+  /**
+   * 删除token
+   *
+   * @param token
+   */
+  public void removeAccessToken(String token) {
 
   }
 
@@ -84,24 +99,80 @@ public class RedisTokenStore implements TokenStore {
 
   }
 
+  /**
+   * 读取refreshToken
+   *
+   * @param tokenValue
+   * @return
+   */
   @Override
   public OAuth2RefreshToken readRefreshToken(String tokenValue) {
-    return null;
+    return (OAuth2RefreshToken) this.redisTemplate.opsForValue().get(REFRESH + tokenValue);
   }
 
+  /**
+   * 通过refreshToken读取认证信息
+   *
+   * @param token
+   * @return
+   */
   @Override
   public OAuth2Authentication readAuthenticationForRefreshToken(OAuth2RefreshToken token) {
-    return null;
+    return readAuthenticationForRefreshToken(token.getValue());
   }
 
+  /**
+   * 通过refreshToken读取认证信息
+   *
+   * @param token
+   * @return
+   */
+  public OAuth2Authentication readAuthenticationForRefreshToken(String token) {
+    return (OAuth2Authentication) this.redisTemplate.opsForValue().get(REFRESH_AUTH + token);
+  }
+
+  /**
+   * 删除refreshToken
+   *
+   * @param token
+   */
   @Override
   public void removeRefreshToken(OAuth2RefreshToken token) {
-
+    removeRefreshToken(token.getValue());
   }
 
+  /**
+   * 删除 refreshToken
+   *
+   * @param token
+   */
+  public void removeRefreshToken(String token) {
+    this.redisTemplate.delete(REFRESH + token);
+    this.redisTemplate.delete(REFRESH_AUTH + token);
+    this.redisTemplate.delete(REFRESH_TO_ACCESS + token);
+    this.redisTemplate.delete(ACCESS_TO_REFRESH + token);
+  }
+
+  /**
+   * 使用RefreshToken删除AccessToken
+   *
+   * @param refreshToken
+   */
   @Override
   public void removeAccessTokenUsingRefreshToken(OAuth2RefreshToken refreshToken) {
+    removeAccessTokenUsingRefreshToken(refreshToken.getValue());
+  }
 
+  /**
+   * 使用RefreshToken删除AccessToken
+   *
+   * @param refreshToken
+   */
+  public void removeAccessTokenUsingRefreshToken(String refreshToken) {
+    String token = (String) this.redisTemplate.opsForValue().get(REFRESH_TO_ACCESS + refreshToken);
+    if (StringUtils.isNotEmpty(token)) {
+
+    }
   }
 
   @Override
