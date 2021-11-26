@@ -1,4 +1,4 @@
-package com.tk.common.oauth2.service.bean;
+package com.tk.common.oauth2.bean;
 
 import com.tk.common.oauth2.service.client.RedisClientDetailsService;
 import com.tk.common.oauth2.service.RedisAuthorizationCodeService;

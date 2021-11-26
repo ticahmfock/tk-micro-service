@@ -23,4 +23,7 @@ public class StringCommons {
   public static final String GLIDE_LINE = "_";
   public static final String DAY = "day";
   public static final String MONTH = "month";
+
+  //==========状态类常量==========//
+  public static final String NORMAL = "normal";
 }
