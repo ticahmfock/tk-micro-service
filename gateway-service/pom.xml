@@ -12,10 +12,20 @@
   <artifactId>gateway-service</artifactId>
 
   <dependencies>
-    <!--eureka客户端-->
+    <!--gateway-->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+      <artifactId>spring-cloud-starter-gateway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.tk</groupId>
+      <artifactId>database-service</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.tk</groupId>
+      <artifactId>tool-service</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
 

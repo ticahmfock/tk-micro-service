@@ -9,7 +9,9 @@ import org.springframework.security.oauth2.provider.token.AuthenticationKeyGener
 import org.springframework.security.oauth2.provider.token.DefaultAuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
-/** 自定义store存储方式 同时使用本地缓存来环境对redis访问的压力
+/**
+ * 自定义store存储方式 同时使用本地缓存来环境对redis访问的压力
+ *
  * @author: TK
  * @date: 2021/11/24 9:21
  */
@@ -35,7 +37,8 @@ public class RedisTokenStore implements TokenStore {
 
 
   /**
-   * 读取
+   * 读取认证信息
+   *
    * @param token
    * @return
    */
@@ -44,11 +47,23 @@ public class RedisTokenStore implements TokenStore {
     return readAuthentication(token.getValue());
   }
 
+  /**
+   * 读取认证信息
+   *
+   * @param token
+   * @return
+   */
   @Override
   public OAuth2Authentication readAuthentication(String token) {
-    return null;
+    return (OAuth2Authentication) this.redisTemplate.opsForValue().get(AUTH + token);
   }
 
+  /**
+   * 存储认证信息
+   *
+   * @param token
+   * @param authentication
+   */
   @Override
   public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
 
