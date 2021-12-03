@@ -1,3 +1,4 @@
+/*
 package com.tk.common.oauth2.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -6,10 +7,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
+*/
 /**
  * @author: TK
  * @date: 2021/11/23 10:40
- */
+ *//*
+
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
@@ -26,3 +29,4 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         .anyRequest().authenticated();
   }
 }
+*/

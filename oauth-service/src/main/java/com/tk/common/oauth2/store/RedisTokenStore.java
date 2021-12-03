@@ -11,37 +11,65 @@ import org.springframework.security.oauth2.provider.token.DefaultAuthenticationK
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
- * 自定义store存储方式
+ * 自定义RedisTokenStore存储方式
  *
  * @author: TK
  * @date: 2021/11/24 9:21
  */
 public class RedisTokenStore implements TokenStore {
 
+  /**
+   * OAuth2AccessToken 存储前缀
+   */
   private static final String ACCESS = "access:";
   private static final String AUTH_TO_ACCESS = "auth_to_access:";
+  /**
+   * OAuth2Authentication 存储前缀
+   */
   private static final String AUTH = "auth:";
   private static final String REFRESH_AUTH = "refresh_auth:";
+  /**
+   * accessToken 存储前缀
+   */
   private static final String ACCESS_TO_REFRESH = "access_to_refresh:";
+  /**
+   * refreshToken
+   */
   private static final String REFRESH = "refresh:";
+  /**
+   * refreshToken 存储前缀
+   */
   private static final String REFRESH_TO_ACCESS = "refresh_to_access:";
+  /**
+   * client_id
+   */
   private static final String CLIENT_ID_TO_ACCESS = "client_id_to_access:";
+  /**
+   * client_id:username
+   */
   private static final String UNAME_TO_ACCESS = "uname_to_access:";
 
   private RedisTemplate<String, Object> redisTemplate;
 
-  private AuthenticationKeyGenerator authenticationKeyGenerator = new DefaultAuthenticationKeyGenerator();
+  //重新实现token生成规则，解决同一用户多次登录获取到的还是之前的同一token,单点登录问题
+  private AuthenticationKeyGenerator authenticationKeyGenerator;
 
   public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
     this.redisTemplate = redisTemplate;
   }
 
+  public void setAuthenticationKeyGenerator(AuthenticationKeyGenerator authenticationKeyGenerator) {
+    this.authenticationKeyGenerator = authenticationKeyGenerator;
+    if (this.authenticationKeyGenerator == null) {
+      this.authenticationKeyGenerator = new DefaultAuthenticationKeyGenerator();
+    }
+  }
 
   /**
-   * 读取认证信息
+   * 读取存储在指定令牌值下的身份验证。
    *
-   * @param token
-   * @return
+   * @param token 用于存储身份验证的令牌值
+   * @return 返回身份验证，如果没有，则为null
    */
   @Override
   public OAuth2Authentication readAuthentication(OAuth2AccessToken token) {
@@ -49,10 +77,10 @@ public class RedisTokenStore implements TokenStore {
   }
 
   /**
-   * 读取认证信息
+   * 读取存储在指定令牌值下的身份验证。
    *
-   * @param token
-   * @return
+   * @param token 用于存储身份验证的令牌值
+   * @return 返回身份验证，如果没有，则为null
    */
   @Override
   public OAuth2Authentication readAuthentication(String token) {
@@ -60,19 +88,25 @@ public class RedisTokenStore implements TokenStore {
   }
 
   /**
-   * 存储认证信息
+   * 存储访问令牌。
    *
-   * @param token
-   * @param authentication
+   * @param token          要存储的令牌。
+   * @param authentication 与令牌关联的身份验证。
    */
   @Override
   public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
 
   }
 
+  /**
+   * 读取AccessToken
+   *
+   * @param tokenValue
+   * @return
+   */
   @Override
   public OAuth2AccessToken readAccessToken(String tokenValue) {
-    return null;
+    return (OAuth2AccessToken) this.redisTemplate.opsForValue().get(ACCESS + tokenValue);
   }
 
   /**
@@ -91,7 +125,11 @@ public class RedisTokenStore implements TokenStore {
    * @param token
    */
   public void removeAccessToken(String token) {
-
+    OAuth2Authentication authentication = (OAuth2Authentication) this.redisTemplate.opsForValue().get(AUTH + token);
+    //删除accessToken
+    this.redisTemplate.delete(ACCESS + token);
+    this.redisTemplate.delete(AUTH + token);
+    this.redisTemplate.delete(ACCESS_TO_REFRESH + token);
   }
 
   @Override
