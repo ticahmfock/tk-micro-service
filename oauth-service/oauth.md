@@ -1,5 +1,12 @@
 ## oauth认证中心 【oauth-service】
+### 功能设想
+```text
+1、支持多种模式的实现并使用，如正常密码登陆由UserNamePassword进行校验，包括但不限于短信登录，微信登录；登陆第三方授权授权模式；邮件发送jwt
 
+2、支持自定义选中是否单点登录
+
+3、针对不同平台来源来进行不同的权限颗粒控制
+```
 ### 一、原理流程
 #### ①理解Security组件
 ```text
@@ -89,6 +96,27 @@ Filter-->DelegatingFilterProxy-->Filter-->Servlet
 
 2、资源认证:授权用户可以访问的资源,一般在WebSecurityConfigurerAdapter的继承类中编写.
 ```
+#### Spring Security核心对象
+```text
+1、Spring Security核心对象大致分为两类；一类是用户对象，一类是认证对象
+
+2、用户对象:用来描述用户并完成对用户信息管理；涉及UserDetails、GrantedAuthority、UserDetailsService、UserManager四个核心对象
+
+    2.1、UserDetails:描述Spring Security中的用户
+
+    2.2、GrantedAuthority:定义用户的操作权限
+
+    2.3、UserDetailsService:定义对UserDetails的查询操作
+
+    2.4、UserDetailsManager:扩展UserDetailsService,添加了创建用户、修改用户密码等功能
+```
+#### 授权
+```text
+1、access()方法来进行更加细粒度的权限控制;http.authorizeRequests().anyRequest().access("hasAuthority('CREATE')");
+
+2、
+```
+
 #### ③@EnableWebSecurity注解
 ```code
 Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
